@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { TasksProvider } from './dataProvider/taskProvider';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -19,6 +20,13 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from scriptrunner!');
 	});
+
+	// vscode.window.createTreeView
+
+	let taskProvider= new TasksProvider(context);
+	vscode.window.registerTreeDataProvider('task-list', taskProvider);
+	vscode.commands.registerCommand('task-list.refresh', () => taskProvider.refresh());
+	vscode.commands.registerCommand('task-list.ignore', (context) => taskProvider.ignore(context));
 
 	context.subscriptions.push(disposable);
 }
