@@ -42,7 +42,7 @@
 			},
 			{
 				"command": "task-list.ignore",
-				"title": "IgnoreFile",
+				"title": "Ignore File",
 				"icon":{
                     "light": "resources/light/ignore.svg",
                     "dark": "resources/dark/ignore.svg"
