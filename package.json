@@ -15,7 +15,7 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"viewsContainers": {
-			"activitybar":[
+			"activitybar": [
 				{
 					"id": "task-explorer",
 					"title": "Task Explorer",
@@ -23,59 +23,58 @@
 				}
 			]
 		},
-		"views":{
-			"task-explorer":[
+		"views": {
+			"task-explorer": [
 				{
 					"id": "task-list",
 					"name": "task List"
 				}
 			]
 		},
-		"commands":[
+		"commands": [
 			{
 				"command": "task-list.refresh",
 				"title": "RefreshTest",
 				"icon": {
-                    "light": "resources/light/refresh.svg",
-                    "dark": "resources/dark/refresh.svg"
-                }
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh.svg"
+				}
 			},
 			{
 				"command": "task-list.ignore",
 				"title": "Ignore File",
-				"icon":{
-                    "light": "resources/light/ignore.svg",
-                    "dark": "resources/dark/ignore.svg"
+				"icon": {
+					"light": "resources/light/ignore.svg",
+					"dark": "resources/dark/ignore.svg"
 				}
 			},
 			{
 				"command": "task-list.execute",
 				"title": "Execute",
-				"icon":{
-                    "light": "resources/light/execute.svg",
-                    "dark": "resources/dark/execute.svg"
+				"icon": {
+					"light": "resources/light/execute.svg",
+					"dark": "resources/dark/execute.svg"
 				}
 			}
 		],
 		"menus": {
-            "view/title": [
-                {
-                    "command": "task-list.refresh",
-                    "group": "navigation"
-                }
+			"view/title": [
+				{
+					"command": "task-list.refresh",
+					"group": "navigation"
+				}
 			],
-			"view/item/context":[
+			"view/item/context": [
 				{
 					"command": "task-list.ignore",
-					"group":"inline"
+					"group": "inline"
 				},
 				{
 					"command": "task-list.execute",
-					"group":"inline"
+					"group": "inline"
 				}
 			]
-    }
-
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -97,5 +96,8 @@
 		"mocha": "^8.1.3",
 		"typescript": "^4.0.2",
 		"vscode-test": "^1.4.0"
+	},
+	"dependencies": {
+		"path": "^0.12.7"
 	}
 }

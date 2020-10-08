@@ -1,23 +1,45 @@
-import { stringify } from 'querystring';
+import { pathToFileURL } from 'url';
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 export class TaskDescription extends vscode.TreeItem
 {
-    private execution: string | undefined = undefined;
+    private relativeDirectory: string | undefined = undefined;
 
-    constructor(file: string, exec: string | undefined) {
+    constructor(file: string, relativeDirectory: string, exec: string | undefined) {
         super(file, vscode.TreeItemCollapsibleState.Collapsed);
 
-       this.setExecutionCommand(exec); 
+        this.relativeDirectory = relativeDirectory;
+        this.label = this.directory === '' ? './' : this.directory;
     }
 
-    get fullCommand() {
-        return this.execution ? `${this.execution} ${this.label}` :
-            `${this.getExecutionParameters(this.label)}`;
+    get directory():string{
+        return path.parse(this.relativeDirectory ?? "./").dir;
+    };
+
+}
+
+export class TaskFileDescription extends TaskDescription
+{
+    private execution: string | undefined = undefined;
+    private filePath: string | undefined = undefined;
+
+    constructor(file: string, relativeDirectory: string, exec: string | undefined) {
+        super(file, relativeDirectory, exec);
+
+        this.filePath = file;
+        this.label = path.parse(file).name + '.' + path.parse(file).ext;
+
+        this.collapsibleState = vscode.TreeItemCollapsibleState.None;
     }
 
     setExecutionCommand(exec: string | undefined) {
         this.execution = exec;
+    }
+
+    get fullCommand() {
+        return this.execution ? `${this.execution} ${this.label}` :
+            `${this.getExecutionParameters(this.filePath)}`;
     }
 
     getExecutionParameters (file:string | undefined) {
@@ -26,6 +48,6 @@ export class TaskDescription extends vscode.TreeItem
            return "";
        };
 
-       return getExtensions(file) + ' ' + file;
+       return getExtensions(this.filePath) + ' ' + this.filePath;
     }
 }

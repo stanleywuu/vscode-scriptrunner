@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
-import {TaskDescription} from '../models/TasksDescription';
+import {TaskDescription, TaskFileDescription} from '../models/TasksDescription';
 
 export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
+
     private _onDidChangeTreeData: vscode.EventEmitter<TaskDescription | null> = new vscode.EventEmitter<TaskDescription | null>();
-	readonly onDidChangeTreeData: vscode.Event<TaskDescription | null> = this._onDidChangeTreeData.event;
+    readonly onDidChangeTreeData: vscode.Event<TaskDescription | null> = this._onDidChangeTreeData.event;
+    
 
 	private autoRefresh: boolean | undefined = true;
 
@@ -19,7 +21,7 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
         console.log(context.label);
     }
 
-    async execute(context: TaskDescription) : Promise<void> {
+    async execute(context: TaskFileDescription) : Promise<void> {
         console.log(context.label);
         const command = context.fullCommand;
         const shell = new vscode.ShellExecution(command);
@@ -33,24 +35,50 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
     }
 
     getChildren(element?: TaskDescription): vscode.ProviderResult<TaskDescription[]> {
-        
-        return this.getScriptsAsync(vscode.workspace.workspaceFolders);
+       if (element)
+       {
+           return this.getScriptFilesAsync(`${element.directory === '' ? '' : element.directory +"/"}*.{sh,bat,ps,ps1,py}`);
+       } 
+        return this.getScriptFoldersAsync();
     }
     
-    async getScriptsAsync(rootFolders: readonly vscode.WorkspaceFolder[] | undefined): Promise<TaskDescription[]>{
+    async getScriptFilesAsync( pattern: string = "**/*.{sh,bat,ps,ps1,py}"): Promise<TaskDescription[]>{
 
-        // TODO: group by folder
-        const files = await vscode.workspace.findFiles("**/*.{sh,bat,ps,ps1,py}").then((f: vscode.Uri[]) => f);
-        const testfiles = await vscode.workspace.findFiles("**/*").then((f: vscode.Uri[]) =>
-        {
-            return f;
-        });
+        const files: any = await vscode.workspace.findFiles(pattern).then(
+            (f: vscode.Uri[]) => f.map((uri) =>  
+            {
+                return {path: uri.path, folder: vscode.workspace.asRelativePath(uri)};
+            }));
 
-        return files.map((f)=>
-        {
-            const description = new TaskDescription(f.path, undefined);
-
+        return await files.map((f: any)=> {
+            const description = new TaskFileDescription(f.path, f.folder,undefined);
             return description;
         });
     }
+
+    async getScriptFoldersAsync( pattern: string = "**/*.{sh,bat,ps,ps1,py}"): Promise<TaskDescription[]>{
+
+        // TODO: group by folder
+        const files: any = await vscode.workspace.findFiles(pattern).then(
+            (f: vscode.Uri[]) => f.map((uri) =>  
+            {
+                return {path: uri.path, folder: vscode.workspace.asRelativePath(uri)};
+            }));
+
+        return await this.unique(files.map((f: any)=> {
+            const description = new TaskDescription(f.path, f.folder,undefined);
+            return description;
+        }));
+    }
+
+    async unique(tasks: TaskDescription[]) : Promise<TaskDescription[]>{
+        let result:Array<string> = new Array<string>();
+        return tasks.filter((t) => {
+            if (result.indexOf(t.directory) < 0) {
+                result.push(t.directory);
+                return true;}
+            return false;
+        });
+    }
+
 }
