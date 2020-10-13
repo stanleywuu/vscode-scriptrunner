@@ -24,17 +24,26 @@ export class TaskFileDescription extends TaskDescription
     private execution: string | undefined = undefined;
     private filePath: string | undefined = undefined;
 
-    constructor(file: string, relativeDirectory: string, exec: string | undefined) {
+    constructor(file: string, relativeDirectory: string, command: vscode.Command, exec: string | undefined) {
         super(file, relativeDirectory, exec);
 
         this.filePath = file;
-        this.label = path.parse(file).name + '.' + path.parse(file).ext;
+        this.label = path.parse(file).name + path.parse(file).ext;
 
         this.collapsibleState = vscode.TreeItemCollapsibleState.None;
+        this.command = command;
     }
 
     setExecutionCommand(exec: string | undefined) {
         this.execution = exec;
+    }
+
+    get extension(){
+        return path.parse(this.filePath ?? "").ext;
+    }
+
+    get file(){
+        return this.filePath;
     }
 
     get fullCommand() {

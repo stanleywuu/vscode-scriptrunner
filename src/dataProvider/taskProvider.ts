@@ -24,10 +24,19 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
     async execute(context: TaskFileDescription) : Promise<void> {
         console.log(context.label);
         const command = context.fullCommand;
-        const shell = new vscode.ShellExecution(command);
+        const shell = new vscode.ShellExecution(command, {
+            cwd: context.directory
+        });
 
         const task = new vscode.Task({type: 'shell'}, vscode.TaskScope.Workspace, 'execute task', 'source', shell);
         await vscode.tasks.executeTask(task);
+    }
+
+
+    async edit(context: any) : Promise<void> {
+        const file = context;
+        await vscode.workspace.openTextDocument(file ?? "").then(doc =>
+            vscode.window.showTextDocument(doc));
     }
     
     getTreeItem(element: TaskDescription): vscode.TreeItem {
@@ -47,13 +56,16 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
         const files: any = await vscode.workspace.findFiles(pattern).then(
             (f: vscode.Uri[]) => f.map((uri) =>  
             {
-                return {path: uri.path, folder: vscode.workspace.asRelativePath(uri)};
+                return new TaskFileDescription(uri.path, vscode.workspace.asRelativePath(uri), 
+                    {
+                        command:'task-list.edit',
+                        title: 'edit',
+                        arguments: [uri.path],
+                        tooltip: 'Open the script file in file editor'},
+                        undefined);
             }));
 
-        return await files.map((f: any)=> {
-            const description = new TaskFileDescription(f.path, f.folder,undefined);
-            return description;
-        });
+        return await files;
     }
 
     async getScriptFoldersAsync( pattern: string = "**/*.{sh,bat,ps,ps1,py}"): Promise<TaskDescription[]>{

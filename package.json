@@ -27,8 +27,11 @@
 			"task-explorer": [
 				{
 					"id": "task-list",
-					"name": "task List"
-				}
+					"name": "Discovered Scripts"
+				},
+				{   "id": "task-list-defined",
+					"name": "Custom scripts"
+				}	
 			]
 		},
 		"commands": [
@@ -55,7 +58,16 @@
 					"light": "resources/light/execute.svg",
 					"dark": "resources/dark/execute.svg"
 				}
+			},
+			{
+				"command": "task-list.edit",
+				"title": "Edit",
+				"icon":{
+					"light": "resources/light/execute.svg",
+					"dark": "resources/dark/execute.svg"
+				}
 			}
+
 		],
 		"menus": {
 			"view/title": [
@@ -71,6 +83,10 @@
 				},
 				{
 					"command": "task-list.execute",
+					"group": "inline"
+				},
+				{
+					"command": "task-list.edit",
 					"group": "inline"
 				}
 			]
