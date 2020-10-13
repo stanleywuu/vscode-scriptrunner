@@ -23,10 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
 	let definedTaskProvider = new TasksProvider(context);
 
 	vscode.window.registerTreeDataProvider('task-list', taskProvider);
-	vscode.window.registerTreeDataProvider('task-list-defined', definedTaskProvider);
+	// vscode.window.registerTreeDataProvider('task-list-defined', definedTaskProvider);
 
 	vscode.commands.registerCommand('task-list.refresh', () => taskProvider.refresh());
-	vscode.commands.registerCommand('task-list.ignore', (context) => taskProvider.ignore(context));
+	vscode.commands.registerCommand('task-list.customize', (context) => taskProvider.customizeTasks(context));
+	vscode.commands.registerCommand('task-list.ignore', (context) => taskProvider.ignoreItem(context));
 	vscode.commands.registerCommand('task-list.execute', (context) => taskProvider.execute(context));
 	vscode.commands.registerCommand('task-list.edit', (context) => taskProvider.edit(context));
 

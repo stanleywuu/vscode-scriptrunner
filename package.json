@@ -39,32 +39,40 @@
 				"command": "task-list.refresh",
 				"title": "RefreshTest",
 				"icon": {
-					"light": "resources/light/refresh.svg",
-					"dark": "resources/dark/refresh.svg"
+					"light": "res/refresh.svg",
+					"dark": "res/refresh.svg"
 				}
 			},
 			{
 				"command": "task-list.ignore",
 				"title": "Ignore File",
 				"icon": {
-					"light": "resources/light/ignore.svg",
-					"dark": "resources/dark/ignore.svg"
+					"light": "res/exclude.svg",
+					"dark": "res/exclude.svg"
 				}
 			},
 			{
 				"command": "task-list.execute",
 				"title": "Execute",
 				"icon": {
-					"light": "resources/light/execute.svg",
-					"dark": "resources/dark/execute.svg"
+					"light": "res/run-all.svg",
+					"dark": "res/run-all.svg"
+				}
+			},
+			{
+				"command": "task-list.customize",
+				"title": "Customize",
+				"icon": {
+					"light": "res/add.svg",
+					"dark": "res/add.svg"
 				}
 			},
 			{
 				"command": "task-list.edit",
 				"title": "Edit",
 				"icon":{
-					"light": "resources/light/execute.svg",
-					"dark": "resources/dark/execute.svg"
+					"light": "res/edit.svg",
+					"dark": "res/edit.svg"
 				}
 			}
 
@@ -86,7 +94,7 @@
 					"group": "inline"
 				},
 				{
-					"command": "task-list.edit",
+					"command": "task-list.customize",
 					"group": "inline"
 				}
 			]
