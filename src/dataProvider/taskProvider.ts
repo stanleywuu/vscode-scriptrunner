@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as meta from './fileHelpers';
 import {TaskDescription, TaskFileDescription} from '../models/TasksDescription';
+import { pathToFileURL } from 'url';
 
 export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
 
@@ -21,8 +23,8 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
         const directory = context.directory;
         const file = context.file ?? "";
 
-        const filePath = this.metaFile(context.file ?? "", "ignore");
-        const ignores = await this.getDataFromFile(filePath[0]);
+        const filePath = meta.ignoreTasksFile(context.file ?? "");
+        const ignores = await meta.getDataFromFile(filePath[0]);
 
         const glob = file ? `**/${directory}/${file}/` : `**/${directory}/*`;
 
@@ -33,43 +35,18 @@ export class TasksProvider implements vscode.TreeDataProvider<TaskDescription>{
     }
 
     async allIgnoreGlobs(directory: string | null) : Promise<any[]>{
-        const uri = this.metaFile(directory, "ignore");
-        const ignores = await this.getDataFromFile(uri[0]);
+        // don't think we need an ignore file under each folder
+        const uri = meta.ignoreTasksFile(null); 
+        const ignores = await meta.getDataFromFile(uri[0]);
         
         return ignores;
     }
 
-    async getDataFromFile(filePath: vscode.Uri): Promise<any[]>{
-            if (!fs.existsSync(filePath.path)){
-                fs.appendFileSync(filePath.path, '[]');
-            }
 
-            const document = await vscode.workspace.openTextDocument(filePath.path);
-
-            return document ? JSON.parse(document.getText()) : [];
-    }
-
-    metaFile(query: string | null, targetFile: string): vscode.Uri[] {
-        const workspaces : (vscode.WorkspaceFolder | undefined)[] | undefined = 
-            query ?[ vscode.workspace.getWorkspaceFolder(vscode.Uri.file(query))]:
-            vscode.workspace.workspaceFolders?.map((w)=> w);
-
-        if (workspaces){
-            const filePaths: vscode.Uri[] = workspaces.map(
-                (w) => {
-                    return w ? vscode.Uri.file(w.uri.fsPath + '/' + targetFile + ".json") :
-                        vscode.Uri.file("");
-                });
-
-            return filePaths;
-        }
-
-        return [vscode.Uri.file("")];
-    }
 
     async customizeTasks(context: TaskFileDescription) : Promise<void>{
-        const filePath = this.metaFile(context.file ?? "", "customTasks");
-        const tasks = await this.getDataFromFile(filePath[0]);
+        const filePath = meta.customTasksFile(context.file ?? "");
+        const tasks = await meta.getDataFromFile(filePath[0]);
 
         const taskName = await vscode.window.showInputBox({placeHolder: context.label, prompt: 'Name of the task'});
         const execution = await vscode.window.showInputBox({value: context.fullCommand, prompt: 'Full execution of the task'});

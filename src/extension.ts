@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { CustomTasksProvider } from './dataProvider/customTaskProvider';
 import { TasksProvider } from './dataProvider/taskProvider';
 
 // this method is called when your extension is activated
@@ -20,14 +21,16 @@ export function activate(context: vscode.ExtensionContext) {
 	// vscode.window.createTreeView
 
 	let taskProvider= new TasksProvider(context);
-	let definedTaskProvider = new TasksProvider(context);
+	let definedTaskProvider = new CustomTasksProvider();
 
 	vscode.window.registerTreeDataProvider('task-list', taskProvider);
 	// vscode.window.registerTreeDataProvider('task-list-defined', definedTaskProvider);
 
 	vscode.commands.registerCommand('task-list.refresh', () => taskProvider.refresh());
 	vscode.commands.registerCommand('task-list.customize', (context) => taskProvider.customizeTasks(context));
-	vscode.commands.registerCommand('task-list.ignore', (context) => taskProvider.ignoreItem(context));
+	vscode.commands.registerCommand('task-list.ignore', (context) => {
+		taskProvider.ignoreItem(context);
+		taskProvider.refresh();});
 	vscode.commands.registerCommand('task-list.execute', (context) => taskProvider.execute(context));
 	vscode.commands.registerCommand('task-list.edit', (context) => taskProvider.edit(context));
 
